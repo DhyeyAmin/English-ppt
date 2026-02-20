@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Cart - Student Marketplace</title>
+
+<style>
+body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#f2f4f5;}
+header{background:#0d1b2a;color:white;padding:18px 40px;display:flex;justify-content:space-between;align-items:center;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{background:#ffb703;color:#000;padding:8px 12px;border-radius:8px;font-weight:bold;}
+.logo-text{font-size:24px;font-weight:bold;letter-spacing:1px;}
+nav button{padding:14px 30px;margin-left:15px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px;}
+.sell-btn{background:#ffb703;color:#000;}
+.buy-btn{background:white;color:#000;}
+.container{max-width:1200px;margin:30px auto;padding:0 20px;}
+.card{background:white;border-radius:10px;padding:20px;box-shadow:0 3px 10px rgba(0,0,0,0.1);margin-bottom:25px;}
+input, select, textarea{width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;}
+.primary{background:#0d1b2a;color:white;border:none;padding:12px;border-radius:6px;cursor:pointer;font-size:15px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;}
+.product{background:white;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;}
+.product img{width:100%;height:180px;object-fit:cover;}
+.product-content{padding:12px;}
+.price{color:#008000;font-weight:bold;font-size:18px;}
+.buy-now{background:#ff9900;border:none;padding:14px;width:100%;font-size:16px;font-weight:bold;cursor:pointer;}
+.buy-now:hover{background:#e68a00;}
+.hidden{display:none;}
+footer{text-align:center;padding:15px;background:#0d1b2a;color:white;margin-top:40px;}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">🛒</div>
+        <div class="logo-text">Campus Cart</div>
+    </div>
+    <nav>
+        <button class="buy-btn" onclick="showSection('buy')">BUY ITEMS</button>
+        <button class="sell-btn" onclick="showSection('sell')">+ SELL ITEM</button>
+    </nav>
+</header>
+
+<div class="container">
+
+<div id="buy">
+    <div class="card">
+        <h2>Browse Marketplace</h2>
+        <input type="text" id="searchInput" placeholder="Search by item name..." onkeyup="displayItems()">
+        <select id="filterUniversity" onchange="displayItems()">
+            <option value="All">All Universities</option>
+            <option value="DDU">DDU</option>
+            <option value="Nirma">Nirma University</option>
+            <option value="MSU">MS University</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    <div id="itemsList" class="grid"></div>
+</div>
+
+<div id="sell" class="hidden">
+    <div class="card">
+        <h2>Post Your Item</h2>
+        <input type="text" id="name" placeholder="Your Name">
+        <select id="university">
+            <option value="DDU">DDU</option>
+            <option value="Nirma">Nirma University</option>
+            <option value="MSU">MS University</option>
+            <option value="Other">Other</option>
+        </select>
+        <input type="text" id="item" placeholder="Item Name">
+        <textarea id="description" placeholder="Item Description"></textarea>
+        <input type="number" id="price" placeholder="Price">
+        <input type="text" id="contact" placeholder="Contact Info">
+        <input type="file" id="photo" accept="image/*">
+        <button class="primary" onclick="addItem()">Post Now</button>
+    </div>
+</div>
+
+</div>
+
+<footer>
+    © 2026 Campus Cart | Student Marketplace
+</footer>
+
+<script>
+let items = [
+    {
+        name: "Rahul",
+        university: "DDU",
+        itemName: "Scientific Calculator",
+        description: "Casio calculator in excellent condition",
+        price: "600",
+        contact: "9876543210",
+        // Using a reliable Unsplash image for a calculator
+        image: "https://images.unsplash.com/photo-1574607383476-f517f220d356?auto=format&fit=crop&q=80&w=500"
+    },
+    {
+        name: "Sneha",
+        university: "Nirma",
+        itemName: "Engineering Notes",
+        description: "Complete 1st year notes bundle",
+        price: "300",
+        contact: "9123456780",
+        // Using a reliable Unsplash image for a notebook
+        image: "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=500"
+    }
+];
+
+function showSection(section) {
+    document.getElementById('buy').classList.add('hidden');
+    document.getElementById('sell').classList.add('hidden');
+    document.getElementById(section).classList.remove('hidden');
+}
+
+function addItem() {
+    const file = document.getElementById('photo').files[0];
+    const name = document.getElementById('name').value;
+    const itemName = document.getElementById('item').value;
+    const price = document.getElementById('price').value;
+
+    if (!name || !itemName || !price) {
+        alert("Please fill in the required fields (Name, Item, and Price)");
+        return;
+    }
+
+    if (!file) {
+        alert("Please upload a photo of the item");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function() {
+        const newItem = {
+            name: name,
+            university: document.getElementById('university').value,
+            itemName: itemName,
+            description: document.getElementById('description').value,
+            price: price,
+            contact: document.getElementById('contact').value,
+            image: reader.result // This converts your uploaded file to a viewable string
+        };
+
+        items.push(newItem);
+        alert("Item Posted Successfully!");
+        
+        // Reset form
+        document.querySelectorAll('#sell input, #sell textarea').forEach(el => el.value = '');
+        
+        displayItems();
+        showSection('buy');
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function buyItem(seller, itemName) {
+    alert("Interested in " + itemName + "?\n\nPlease contact " + seller + " to complete the purchase.");
+}
+
+function displayItems() {
+    const list = document.getElementById('itemsList');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const university = document.getElementById('filterUniversity').value;
+
+    list.innerHTML = '';
+
+    const filteredItems = items.filter(i =>
+        (university === "All" || i.university === university) &&
+        i.itemName.toLowerCase().includes(search)
+    );
+
+    filteredItems.forEach(i => {
+        list.innerHTML += `
+        <div class="product">
+            <div>
+                <img src="${i.image}" alt="${i.itemName}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image+Available'">
+                <div class="product-content">
+                    <h3>${i.itemName}</h3>
+                    <p class="price">₹ ${i.price}</p>
+                    <p>${i.description}</p>
+                    <small>📍 ${i.university}</small>
+                    <p style="margin-top:10px;"><strong>Seller:</strong> ${i.name}</p>
+                </div>
+            </div>
+            <button class="buy-now" onclick="buyItem('${i.name}','${i.itemName}')">BUY NOW</button>
+        </div>`;
+    });
+}
+
+// Initial Render
+displayItems();
+</script>
+
+</body>
+</html>
